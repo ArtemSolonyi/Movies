@@ -1,7 +1,7 @@
 import mongoose from "mongoose"
 import validator from "validator"
 
- const UserSchema = new mongoose.Schema({
+const UserSchema = new mongoose.Schema({
     username: {
         unique: true,
         type: String,
@@ -24,6 +24,10 @@ import validator from "validator"
         required: [true, "must provide password"],
         minlength: [7, "Short password"],
     },
+    role: {
+        type:String,
+        enum: ["admin", "user"]
+    }
 });
 
-export const User =  mongoose.model("User", UserSchema);
+export const User = mongoose.model("User", UserSchema);
