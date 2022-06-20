@@ -1,11 +1,13 @@
 import express from 'express';
-const app = express()
-const PORT  = process.env.PORT || 5000
 
-app.listen(PORT,(error)=>{
-    if(error){
+const app = express()
+const PORT = process.env.PORT || 5000
+
+app.use(express.json())
+app.listen(PORT, (error) => {
+    if (error) {
         console.log(error)
-    }else{
-        console.log("App listen:localhost:"+PORT)
+    } else {
+        console.log("App listen:localhost:" + PORT)
     }
 })
