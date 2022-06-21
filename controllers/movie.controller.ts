@@ -1,7 +1,6 @@
 import {MovieService} from '../services/movie.service'
 import {Request, Response} from "express";
 
-
 export class MovieController {
     private movie: MovieService;
 
