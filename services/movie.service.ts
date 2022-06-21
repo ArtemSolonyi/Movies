@@ -1,14 +1,16 @@
-import {Movie} from '../models/Movie.js'
+import {Request,Response} from "express";
+import {Movie} from '../models/Movie'
+
+
 
 export class MovieService {
-
-    createMovie = async (req, res) => {
-        const {title, description, rating} = req.body
-        const movie = await Movie.create(title, description, rating)
+    createMovie = async (req:Request, res:Response) => {
+        const {title, description} = req.body
+        const movie = await Movie.create(title, description)
         return res.status(200).json({"movie": movie})
     }
 
-    getMovie = async (req, res) => {
+    getMovie = async (req:Request, res:Response) => {
         const id = req.query.id
         const movie = await Movie.findOne({_id: id})
         if (!movie) {
@@ -17,14 +19,14 @@ export class MovieService {
         return res.status(200).json(movie)
     }
 
-    updateMovie = async (req, res) => {
+    updateMovie = async (req:Request, res:Response) => {
         const {id, title, description, rating} = req.body
         const movie = Movie.updateOne(id, title, description, rating)
         return res.status(200).json({"movie": movie})
     }
 
-    deleteMovie = async (req, res) => {
-        const {id} = req.query.id
+    deleteMovie = async (req:Request, res:Response) => {
+        const id = req.query.id
         const movie = Movie.deleteOne({_id: id})
         if (!movie) {
             return res.status(200).json({message: "Movie doesn't delete"})
