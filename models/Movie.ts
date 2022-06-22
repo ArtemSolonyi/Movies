@@ -9,18 +9,18 @@ const MovieSchema = new mongoose.Schema({
     },
     description: {
         type: String,
-        required: [true, "must provide email"],
+        required: [true, "must provide description"],
         minLength: [5, "Short description"],
         maxLength:[400,"So long description"]
     },
     rating: {
         type: Number,
-        required: [false, "must provide password"],
-        minlength: [7, "Short password"],
+        required: false,
+
     },
     category:{
         type:String,
-        required:false
+        required:true
     }
 });
 

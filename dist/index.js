@@ -10,10 +10,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from "dotenv";
+import pkg from 'body-parser';
 import { router as indexRoute } from './routes/movie';
 const app = express();
 const PORT = process.env.PORT || 3001;
 dotenv.config();
+app.use(pkg());
 app.use(express.json());
 app.use('/api/v1/movies', indexRoute);
 const start = () => __awaiter(void 0, void 0, void 0, function* () {

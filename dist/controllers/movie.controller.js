@@ -10,11 +10,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 export class MovieController {
     constructor(movieService) {
         this.createMovie = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const result = yield this.movie.createMovie(req, res);
+            const result = yield this.movie.createMovie(req.body);
             if (!result) {
                 return res.status(500).json({ "message": "Failed to create movie" });
             }
-            return result;
+            return res.status(200).json({ "result": result });
         });
         this.updateMovie = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const result = yield this.movie.updateMovie(req, res);

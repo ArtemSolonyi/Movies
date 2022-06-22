@@ -10,10 +10,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { Movie } from '../models/Movie';
 export class MovieService {
     constructor() {
-        this.createMovie = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const { title, description, category, } = req.body;
-            const movie = yield Movie.create({ title, description, category });
-            return res.status(200).json({ "movie": movie });
+        this.createMovie = (body) => __awaiter(this, void 0, void 0, function* () {
+            const { title, description, category } = body;
+            return yield Movie.create({ title, description, category });
         });
         this.getMovie = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const id = req.query.id;

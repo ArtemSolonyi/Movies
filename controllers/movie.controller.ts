@@ -1,5 +1,6 @@
 import {MovieService} from '../services/movie.service'
 import {Request, Response} from "express";
+import {MovieDto} from "../services/movie.dto";
 
 export class MovieController {
     private movie: MovieService;
@@ -7,12 +8,13 @@ export class MovieController {
     constructor(movieService: MovieService) {
         this.movie = movieService
     }
-    createMovie = async (req: Request, res: Response) => {
-        const result = await this.movie.createMovie(req, res)
+    createMovie = async (req: Request<{},{},MovieDto>, res: Response) => {
+        const result = await this.movie.createMovie(req.body)
+
         if (!result) {
             return res.status(500).json({"message": "Failed to create movie"})
         }
-        return result
+        return res.status(200).json({"result":result})
     }
     updateMovie = async (req: Request, res: Response) => {
         const result = await this.movie.updateMovie(req, res)

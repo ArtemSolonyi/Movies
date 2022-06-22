@@ -1,11 +1,12 @@
 import {Request, Response} from "express";
 import {Movie} from '../models/Movie'
+import {MovieDto} from "./movie.dto";
+
 
 export class MovieService {
-    createMovie = async (req: Request, res: Response) => {
-        const {title, description, category,} = req.body
-        const movie = await Movie.create({title, description,category})
-        return res.status(200).json({"movie": movie})
+    createMovie = async (body: MovieDto) => {
+        const {title, description,category} = body
+        return await Movie.create({title, description, category})
     }
 
     getMovie = async (req: Request, res: Response) => {
