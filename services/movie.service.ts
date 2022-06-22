@@ -4,7 +4,7 @@ import {Movie} from '../models/Movie'
 export class MovieService {
     createMovie = async (req: Request, res: Response) => {
         const {title, description, category,} = req.body
-        const movie = await Movie.create(title, description,category)
+        const movie = await Movie.create({title, description,category})
         return res.status(200).json({"movie": movie})
     }
 

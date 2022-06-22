@@ -1,5 +1,4 @@
-import mongoose from "mongoose"
-
+import mongoose from "mongoose";
 const MovieSchema = new mongoose.Schema({
     title: {
         type: String,
@@ -11,17 +10,16 @@ const MovieSchema = new mongoose.Schema({
         type: String,
         required: [true, "must provide email"],
         minLength: [5, "Short description"],
-        maxLength:[400,"So long description"]
+        maxLength: [400, "So long description"]
     },
     rating: {
         type: Number,
         required: [false, "must provide password"],
         minlength: [7, "Short password"],
     },
-    category:{
-        type:String,
-        required:false
+    category: {
+        type: String,
+        required: false
     }
 });
-
-export const Movie =  mongoose.model("Movie", MovieSchema);
+export const Movie = mongoose.model("Movie", MovieSchema);
