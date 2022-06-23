@@ -39,9 +39,6 @@ export class MovieController {
         });
         this.getMovieOfCategory = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const result = yield this.movie.movieOfCategory(req.body);
-            if (!result) {
-                return res.status(500).json({ "message": "Failed to delete movie" });
-            }
             return res.status(200).json(result);
         });
         this.movie = movieService;

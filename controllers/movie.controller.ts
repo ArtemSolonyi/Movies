@@ -41,9 +41,9 @@ export class MovieController {
     }
     getMovieOfCategory = async(req:Request<{},MovieDto>,res:Response)=>{
         const result = await this.movie.movieOfCategory(req.body)
-        if (!result) {
-            return res.status(500).json({"message": "Failed to delete movie"})
-        }
+        // if (result) {
+        //     return res.status(500).json({"message": "Failed to delete movie"})
+        // }
         return res.status(200).json(result)
     }
 

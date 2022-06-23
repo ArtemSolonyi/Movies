@@ -4,12 +4,12 @@ import {Category, ICategoryDoc} from "../models/Category"
 
 
 export class MovieService {
-    createMovie = async (body: MovieDto) => {
+    createMovie = async (body: MovieDto): Promise<object> => {
         try {
-            const {title,description,category} = body
-            const foundCategory:ICategoryDoc|null = await Category.findOne({category:category})
-            const movie = await Movie.create({title, description,category:foundCategory?._id})
-            return {"movie":movie}
+            const {title, description, category} = body
+            const movie = await Movie.create({title, description, category: category})
+            await Category.findOneAndUpdate({category: category}, {$push: {movie: movie}})
+            return {"movie": movie, "category": await Category.findOne({category: category})}
         } catch (e: any) {
             return e.message
         }
@@ -33,7 +33,8 @@ export class MovieService {
             return {"movies": await Movie.find(), status: 200}
         }
     }
-    movieOfCategory = async (body:MovieDto) => {
+
+    movieOfCategory = async (category) => {
 
     }
 

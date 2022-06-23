@@ -1,16 +1,22 @@
-import mongoose,{Document,Schema,Types} from "mongoose"
-interface ICategory  extends mongoose.Document{
-    category:string,
-    _id:Types.ObjectId
+import mongoose, {Schema, Types} from "mongoose"
+interface ICategory extends mongoose.Document {
+    category: string,
+    movie: mongoose.Types.ObjectId,
+    _id: mongoose.Types.ObjectId
 }
-export interface ICategoryDoc extends ICategory{}
 
-const CategorySchema:Schema = new mongoose.Schema({
+export interface ICategoryDoc extends ICategory {
+}
+
+const CategorySchema: Schema = new mongoose.Schema({
     category: {
         type: String,
         required: true,
+    },
+    movie: {
+        type: [{type: mongoose.Types.ObjectId, ref: "Movie"}]
     }
 
 });
 
-export let Category =  mongoose.model<ICategoryDoc>("Category", CategorySchema);
+export let Category = mongoose.model<ICategoryDoc>("Category", CategorySchema);

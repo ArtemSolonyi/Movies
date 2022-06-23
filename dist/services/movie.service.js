@@ -14,9 +14,9 @@ export class MovieService {
         this.createMovie = (body) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const { title, description, category } = body;
-                const foundCategory = yield Category.findOne({ category: category });
-                const movie = yield Movie.create({ title, description, category: foundCategory === null || foundCategory === void 0 ? void 0 : foundCategory._id });
-                return { "movie": movie };
+                const movie = yield Movie.create({ title, description, category: category });
+                yield Category.findOneAndUpdate({ category: category }, { $push: { movie: movie } });
+                return { "movie": movie, "category": yield Category.findOne({ category: category }) };
             }
             catch (e) {
                 return e.message;
@@ -37,7 +37,6 @@ export class MovieService {
             }
         });
         this.movieOfCategory = (body) => __awaiter(this, void 0, void 0, function* () {
-            return yield Category.create({ category: body.category });
         });
     }
 }
