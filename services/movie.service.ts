@@ -1,37 +1,42 @@
-import {Request, Response} from "express";
 import {Movie} from '../models/Movie'
 import {MovieDto} from "./movie.dto";
-
+import {Category} from "../models/Category"
 
 export class MovieService {
     createMovie = async (body: MovieDto) => {
-        const {title, description,category} = body
-        return await Movie.create({title, description, category})
-    }
-
-    getMovie = async (req: Request, res: Response) => {
-        const id = req.query.id
-        const movie = await Movie.findOne({_id: id})
-        if (!movie) {
-            return res.status(422).json({message: "Movie doesn't exist"})
+        try {
+            const {title, description, category} = body
+            const categoryId = await Category.findOne({category:category})
+            const movie = await Movie.create({title, description,category:categoryId})
+            return {"movie": movie, status: 200}
+        } catch (e: any) {
+            return e.message
         }
-        return res.status(200).json(movie)
     }
 
-    updateMovie = async (req: Request, res: Response) => {
-        const {id, title, description, rating} = req.body
-        const movie = Movie.updateOne(id, title, description, rating)
-        return res.status(200).json({"movie": movie})
+    getMovie = async (id: string) => {
+
+        //const movie = await Movie.findOne({_id: id})
+        return {"movie": 's', status: 200}
     }
 
-    deleteMovie = async (req: Request, res: Response) => {
-        const id = req.query.id
-        const movie = Movie.deleteOne({_id: id})
-        if (!movie) {
-            return res.status(200).json({message: "Movie doesn't delete"})
+    updateMovie = async (body: MovieDto) => {
+        const {title, description, category} = body
+        const movie = Movie.updateOne({title, description, category})
+        return {"movie": movie, status: 200}
+    }
+
+    deleteMovie = async (id: string) => {
+        const movie = await Movie.deleteOne({_id: id})
+        if (movie) {
+            return {"movies": await Movie.find(), status: 200}
         }
-        return res.status(200).json({message: "Movie was successfully destroyed"})
     }
-
+    movieOfCategory = async (body:MovieDto) => {
+        return await Category.create({category:body.category})
+    }
 
 }
+
+
+

@@ -8,32 +8,36 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { Movie } from '../models/Movie';
+import { Category } from "../models/Category";
 export class MovieService {
     constructor() {
         this.createMovie = (body) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { title, description, category } = body;
+                const categoryId = yield Category.findOne({ category: category });
+                const movie = yield Movie.create({ title, description, category: categoryId });
+                return { "movie": movie, status: 200 };
+            }
+            catch (e) {
+                return e.message;
+            }
+        });
+        this.getMovie = (id) => __awaiter(this, void 0, void 0, function* () {
+            return { "movie": 's', status: 200 };
+        });
+        this.updateMovie = (body) => __awaiter(this, void 0, void 0, function* () {
             const { title, description, category } = body;
-            return yield Movie.create({ title, description, category });
+            const movie = Movie.updateOne({ title, description, category });
+            return { "movie": movie, status: 200 };
         });
-        this.getMovie = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const id = req.query.id;
-            const movie = yield Movie.findOne({ _id: id });
-            if (!movie) {
-                return res.status(422).json({ message: "Movie doesn't exist" });
+        this.deleteMovie = (id) => __awaiter(this, void 0, void 0, function* () {
+            const movie = yield Movie.deleteOne({ _id: id });
+            if (movie) {
+                return { "movies": yield Movie.find(), status: 200 };
             }
-            return res.status(200).json(movie);
         });
-        this.updateMovie = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const { id, title, description, rating } = req.body;
-            const movie = Movie.updateOne(id, title, description, rating);
-            return res.status(200).json({ "movie": movie });
-        });
-        this.deleteMovie = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const id = req.query.id;
-            const movie = Movie.deleteOne({ _id: id });
-            if (!movie) {
-                return res.status(200).json({ message: "Movie doesn't delete" });
-            }
-            return res.status(200).json({ message: "Movie was successfully destroyed" });
+        this.movieOfCategory = (body) => __awaiter(this, void 0, void 0, function* () {
+            return yield Category.create({ category: body.category });
         });
     }
 }

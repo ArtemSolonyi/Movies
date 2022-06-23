@@ -16,10 +16,10 @@ const MovieSchema = new mongoose.Schema({
     rating: {
         type: Number,
         required: false,
-
     },
     category:{
-        type:String,
+        type:mongoose.Types.ObjectId,
+        ref:'Category',
         required:true
     }
 });
