@@ -14,9 +14,9 @@ export class MovieService {
         this.createMovie = (body) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const { title, description, category } = body;
-                const categoryId = yield Category.findOne({ category: category });
-                const movie = yield Movie.create({ title, description, category: categoryId });
-                return { "movie": movie, status: 200 };
+                const foundCategory = yield Category.findOne({ category: category });
+                const movie = yield Movie.create({ title, description, category: foundCategory === null || foundCategory === void 0 ? void 0 : foundCategory._id });
+                return { "movie": movie };
             }
             catch (e) {
                 return e.message;

@@ -1,14 +1,15 @@
 import {Movie} from '../models/Movie'
 import {MovieDto} from "./movie.dto";
-import {Category} from "../models/Category"
+import {Category, ICategoryDoc} from "../models/Category"
+
 
 export class MovieService {
     createMovie = async (body: MovieDto) => {
         try {
-            const {title, description, category} = body
-            const categoryId = await Category.findOne({category:category})
-            const movie = await Movie.create({title, description,category:categoryId})
-            return {"movie": movie, status: 200}
+            const {title,description,category} = body
+            const foundCategory:ICategoryDoc|null = await Category.findOne({category:category})
+            const movie = await Movie.create({title, description,category:foundCategory?._id})
+            return {"movie":movie}
         } catch (e: any) {
             return e.message
         }
@@ -33,7 +34,7 @@ export class MovieService {
         }
     }
     movieOfCategory = async (body:MovieDto) => {
-        return await Category.create({category:body.category})
+
     }
 
 }

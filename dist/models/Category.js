@@ -3,6 +3,6 @@ const CategorySchema = new mongoose.Schema({
     category: {
         type: String,
         required: true,
-    },
+    }
 });
-export const Category = mongoose.model("Category", CategorySchema);
+export let Category = mongoose.model("Category", CategorySchema);
