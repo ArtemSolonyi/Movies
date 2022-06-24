@@ -13,9 +13,7 @@ const CategorySchema: Schema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    movie: {
-        type: [{type: mongoose.Types.ObjectId, ref: "Movie"}]
-    }
+
 
 });
 

@@ -1,6 +1,7 @@
 import {Movie} from '../models/Movie'
 import {MovieDto} from "./movie.dto";
-import {Category, ICategoryDoc} from "../models/Category"
+import {Category} from "../models/Category"
+import mongoose from "mongoose";
 
 
 export class MovieService {
@@ -8,17 +9,18 @@ export class MovieService {
         try {
             const {title, description, category} = body
             const movie = await Movie.create({title, description, category: category})
-            await Category.findOneAndUpdate({category: category}, {$push: {movie: movie}})
-            return {"movie": movie, "category": await Category.findOne({category: category})}
+            return {"movie": movie}
         } catch (e: any) {
             return e.message
         }
     }
-
+    createCategory = async (body: MovieDto) => {
+        const {category} = body
+        return await Category.create({category})
+    }
     getMovie = async (id: string) => {
-
-        //const movie = await Movie.findOne({_id: id})
-        return {"movie": 's', status: 200}
+        const movie = await Movie.findOne({_id: id})
+        return {"movie": movie, status: 200}
     }
 
     updateMovie = async (body: MovieDto) => {
@@ -33,12 +35,9 @@ export class MovieService {
             return {"movies": await Movie.find(), status: 200}
         }
     }
-
-    movieOfCategory = async (category) => {
-
+    movieOfCategory = async (category: mongoose.Types.ObjectId) => {
+        return Movie.find({category: category})
     }
-
 }
-
 
 

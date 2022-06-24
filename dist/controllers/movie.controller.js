@@ -38,7 +38,11 @@ export class MovieController {
             return result;
         });
         this.getMovieOfCategory = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const result = yield this.movie.movieOfCategory(req.body);
+            const result = yield this.movie.movieOfCategory(req.params.category);
+            return res.status(200).json(result);
+        });
+        this.createCategory = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const result = yield this.movie.createCategory(req.body);
             return res.status(200).json(result);
         });
         this.movie = movieService;

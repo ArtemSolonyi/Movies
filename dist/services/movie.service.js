@@ -15,12 +15,15 @@ export class MovieService {
             try {
                 const { title, description, category } = body;
                 const movie = yield Movie.create({ title, description, category: category });
-                yield Category.findOneAndUpdate({ category: category }, { $push: { movie: movie } });
-                return { "movie": movie, "category": yield Category.findOne({ category: category }) };
+                return { "movie": movie };
             }
             catch (e) {
                 return e.message;
             }
+        });
+        this.createCategory = (body) => __awaiter(this, void 0, void 0, function* () {
+            const { category } = body;
+            return yield Category.create({ category });
         });
         this.getMovie = (id) => __awaiter(this, void 0, void 0, function* () {
             return { "movie": 's', status: 200 };
@@ -36,7 +39,8 @@ export class MovieService {
                 return { "movies": yield Movie.find(), status: 200 };
             }
         });
-        this.movieOfCategory = (body) => __awaiter(this, void 0, void 0, function* () {
+        this.movieOfCategory = (category) => __awaiter(this, void 0, void 0, function* () {
+            return Movie.find({ category: category });
         });
     }
 }

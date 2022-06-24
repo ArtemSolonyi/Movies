@@ -4,7 +4,7 @@ import dotenv from "dotenv"
 import pkg from 'body-parser'
 import { router as indexRoute } from './routes/movie'
 const app: Express = express()
-const PORT: number | string = process.env.PORT || 3001
+const PORT: string | number = process.env.PORT || 3020
 
 dotenv.config()
 app.use(pkg())
