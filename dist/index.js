@@ -18,23 +18,26 @@ dotenv.config();
 app.use(pkg());
 app.use(express.json());
 app.use('/api/v1/movies', indexRoute);
-const start = () => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        yield mongoose
-            .connect('mongodb+srv://artem123a123:Lemon123@cluster0.0eo3z.mongodb.net/?retryWrites=true&w=majority', {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        })
-            .then((res) => {
-            console.log('Connected to Distribution API Database - Initial Connection');
-        })
-            .catch((err) => {
-            console.log(`Initial Distribution API Database connection error occured -`, err);
+export class App {
+    constructor() {
+        this.start = () => __awaiter(this, void 0, void 0, function* () {
+            try {
+                yield mongoose
+                    .connect('mongodb+srv://artem123a123:Lemon123@cluster0.0eo3z.mongodb.net/?retryWrites=true&w=majority', {
+                    useNewUrlParser: true,
+                    useUnifiedTopology: true,
+                })
+                    .then((res) => {
+                    console.log('Connected to Distribution API Database - Initial Connection');
+                })
+                    .catch((err) => {
+                    console.log(`Initial Distribution API Database connection error occured -`, err);
+                });
+                app.listen(PORT, () => console.log(`Server is listening on port ${PORT}...`));
+            }
+            catch (error) {
+                console.log(error);
+            }
         });
-        app.listen(PORT, () => console.log(`Server is listening on port ${PORT}...`));
     }
-    catch (error) {
-        console.log(error);
-    }
-});
-start();
+}

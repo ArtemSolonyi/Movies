@@ -1,3 +1,9 @@
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -9,7 +15,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { Movie } from '../models/Movie';
 import { Category } from "../models/Category";
-export class MovieService {
+import { injectable } from "inversify";
+let MovieService = class MovieService {
     constructor() {
         this.createMovie = (body) => __awaiter(this, void 0, void 0, function* () {
             try {
@@ -26,7 +33,8 @@ export class MovieService {
             return yield Category.create({ category });
         });
         this.getMovie = (id) => __awaiter(this, void 0, void 0, function* () {
-            return { "movie": 's', status: 200 };
+            const movie = yield Movie.findOne({ _id: id });
+            return { "movie": movie, status: 200 };
         });
         this.updateMovie = (body) => __awaiter(this, void 0, void 0, function* () {
             const { title, description, category } = body;
@@ -43,4 +51,8 @@ export class MovieService {
             return Movie.find({ category: category });
         });
     }
-}
+};
+MovieService = __decorate([
+    injectable()
+], MovieService);
+export { MovieService };

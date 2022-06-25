@@ -1,9 +1,10 @@
 import {Movie} from '../models/Movie'
-import {MovieDto} from "./movie.dto";
+import {MovieDto} from "../dto/movie.dto";
 import {Category} from "../models/Category"
 import mongoose from "mongoose";
+import {injectable} from "inversify";
 
-
+@injectable()
 export class MovieService {
     createMovie = async (body: MovieDto): Promise<object> => {
         try {

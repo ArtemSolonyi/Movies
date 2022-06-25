@@ -1,13 +1,13 @@
-import {MovieService} from '../services/movie.service'
+import {TYPES} from "../types";
 import {Request, Response} from "express";
-import {MovieDto} from "../services/movie.dto";
+import {MovieDto} from "../dto/movie.dto";
 import mongoose from "mongoose";
+import {injectable, inject} from "inversify";
+import {MovieService} from "../services/movie.service";
 
+@injectable()
 export class MovieController {
-    private movie: MovieService;
-
-    constructor(movieService: MovieService) {
-        this.movie = movieService
+    constructor(@inject(TYPES.MovieService) private movie: MovieService) {
     }
 
     createMovie = async (req: Request<{}, {}, MovieDto>, res: Response) => {
@@ -40,7 +40,7 @@ export class MovieController {
         }
         return result
     }
-    getMovieOfCategory = async (req: Request<{ category:mongoose.Types.ObjectId  }, MovieDto>, res: Response) => {
+    getMovieOfCategory = async (req: Request<{ category: mongoose.Types.ObjectId }, MovieDto>, res: Response) => {
         const result = await this.movie.movieOfCategory(req.params.category)
         if (!result) {
             return res.status(500).json({"message": "Failed to delete movie"})
