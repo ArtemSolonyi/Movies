@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "type": "module",
-  "main": "./dist/index.js",
+  "main": "./dist/main.js",
   "scripts": {
-    "start": "nodemon --experimental-modules --es-module-specifier-resolution=node ./dist/index.js",
+    "start": "nodemon --experimental-modules --es-module-specifier-resolution=node ./dist/main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -24,6 +24,7 @@
     "inversify": "^6.0.1",
     "mongoose": "^6.4.0",
     "nodemon": "^2.0.16",
+    "reflect-metadata": "^0.1.13",
     "typescript": "^4.7.4",
     "validator": "^13.7.0"
   }

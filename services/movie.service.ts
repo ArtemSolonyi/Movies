@@ -3,7 +3,7 @@ import {MovieDto} from "../dto/movie.dto";
 import {Category} from "../models/Category"
 import mongoose from "mongoose";
 import {injectable} from "inversify";
-
+import "reflect-metadata"
 @injectable()
 export class MovieService {
     createMovie = async (body: MovieDto): Promise<object> => {

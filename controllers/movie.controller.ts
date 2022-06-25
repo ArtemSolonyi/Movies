@@ -4,11 +4,11 @@ import {MovieDto} from "../dto/movie.dto";
 import mongoose from "mongoose";
 import {injectable, inject} from "inversify";
 import {MovieService} from "../services/movie.service";
+import "reflect-metadata"
 
 @injectable()
 export class MovieController {
-    constructor(@inject(TYPES.MovieService) private movie: MovieService) {
-    }
+    constructor(@inject(TYPES.MovieService) private movie: MovieService) {}
 
     createMovie = async (req: Request<{}, {}, MovieDto>, res: Response) => {
         const result = await this.movie.createMovie(req.body)

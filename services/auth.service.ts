@@ -1,6 +1,7 @@
 import {UserDto} from "../dto/user.dto";
 import {UserService} from "./user.service";
 import {injectable} from "inversify";
+import "reflect-metadata"
 @injectable()
 export class AuthService{
     private user:UserService
