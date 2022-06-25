@@ -4,6 +4,8 @@ import {Category} from "../models/Category"
 import mongoose from "mongoose";
 import {injectable} from "inversify";
 import "reflect-metadata"
+
+
 @injectable()
 export class MovieService {
     createMovie = async (body: MovieDto): Promise<object> => {
@@ -26,7 +28,7 @@ export class MovieService {
 
     updateMovie = async (body: MovieDto) => {
         const {title, description, category} = body
-        const movie = Movie.updateOne({title, description, category})
+        const movie = await Movie.updateOne({title, description, category})
         return {"movie": movie, status: 200}
     }
 
@@ -37,8 +39,10 @@ export class MovieService {
         }
     }
     movieOfCategory = async (category: mongoose.Types.ObjectId) => {
-        return Movie.find({category: category})
+        return await Movie.find({category: category})
     }
+
+
 }
 
 

@@ -30,7 +30,7 @@ let MovieService = class MovieService {
         };
         this.updateMovie = async (body) => {
             const { title, description, category } = body;
-            const movie = Movie.updateOne({ title, description, category });
+            const movie = await Movie.updateOne({ title, description, category });
             return { "movie": movie, status: 200 };
         };
         this.deleteMovie = async (id) => {
@@ -40,7 +40,7 @@ let MovieService = class MovieService {
             }
         };
         this.movieOfCategory = async (category) => {
-            return Movie.find({ category: category });
+            return await Movie.find({ category: category });
         };
     }
 };
