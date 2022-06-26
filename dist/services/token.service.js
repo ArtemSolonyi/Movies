@@ -29,7 +29,7 @@ export class TokenService {
         return this.tokens;
     }
     get tokens() {
-        return { "accessToken": this.accessToken, "refreshToken": this.refreshToken };
+        return { accessToken: this.accessToken, refreshToken: this.refreshToken };
     }
 }
 //# sourceMappingURL=token.service.js.map

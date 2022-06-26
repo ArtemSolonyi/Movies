@@ -45,6 +45,6 @@ export class TokenService {
     }
 
     public get tokens(): object {
-        return {"accessToken": this.accessToken, "refreshToken": this.refreshToken}
+        return {accessToken: this.accessToken, refreshToken: this.refreshToken}
     }
 }

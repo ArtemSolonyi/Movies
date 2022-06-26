@@ -12,7 +12,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 import { AuthService } from "../services/auth.service";
 import express from "express";
-import { UserDto } from "../dto/user.dto";
+import { UserDto, UserLoginDto } from "../dto/user.dto";
 import { injectable, inject } from "inversify";
 import { TYPES } from "../types";
 import "reflect-metadata";
@@ -24,10 +24,14 @@ let AuthController = class AuthController {
             const result = await this.authService.getRegisteredUser(req.body);
             return res.status(200).json(result);
         };
+        this.login = async (req, res) => {
+            const result = await this.authService.login(req.body);
+            return res.status(200).json(result);
+        };
     }
     createRouter() {
         const router = express.Router();
-        router.post('/', validator(UserDto), this.register);
+        router.post('/register', validator(UserDto), this.register).post('/login', validator(UserLoginDto), this.login);
         return router;
     }
 };

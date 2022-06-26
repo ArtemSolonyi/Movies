@@ -27,4 +27,17 @@ __decorate([
     MinLength(7),
     __metadata("design:type", String)
 ], UserDto.prototype, "password", void 0);
+export class UserLoginDto {
+}
+__decorate([
+    IsEmail(),
+    IsString(),
+    MinLength(5),
+    __metadata("design:type", String)
+], UserLoginDto.prototype, "email", void 0);
+__decorate([
+    IsString(),
+    MinLength(7),
+    __metadata("design:type", String)
+], UserLoginDto.prototype, "password", void 0);
 //# sourceMappingURL=user.dto.js.map

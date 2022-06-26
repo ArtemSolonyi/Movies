@@ -4,9 +4,9 @@ import {injectable} from "inversify";
 import "reflect-metadata"
 import mongoose from "mongoose"
 import {IUser, User as UserModel} from '../models/User'
-import ''
+import {Token} from "../models/Token"
 import {TokenService} from "./token.service";
-import bcrypt, {compareSync} from "bcryptjs";
+import bcrypt from "bcryptjs";
 
 @injectable()
 export class AuthService {
@@ -29,16 +29,20 @@ export class AuthService {
     }
 
     async login(body: UserDto) {
-        const user = await UserModel.findOne({email: body.email})
+        const user: IUser | null = await UserModel.findOne({email: body.email})
         if (user) {
             const checkResemblanceDecodePassword = bcrypt.compareSync(body.password, user.password);
             if (checkResemblanceDecodePassword) {
-
-            }{
-               return {"message":"Password doesn't resemblance"}
+                const instanceToken = new TokenService(user)
+                await instanceToken.groupingCreatedTokens()
+                // @ts-ignore
+                await Token.findOneAndUpdate({user:user._id},{accessToken: instanceToken.tokens.accessToken, refreshToken: instanceToken.tokens.refreshToken})
+                return instanceToken.tokens
+            } else {
+                return {"message": "Password doesn't resemblance"}
             }
         } else {
-            return {"message": "User not found","status":422}
+            return {"message": "User not found", "status": 422}
         }
 
     }

@@ -13,3 +13,13 @@ export class UserDto {
     @MinLength(7)
     password: string
 }
+export class UserLoginDto{
+    @IsEmail()
+    @IsString()
+    @MinLength(5)
+    email: string;
+    @IsString()
+    @MinLength(7)
+    password: string
+
+}

@@ -1,6 +1,6 @@
 import {AuthService} from "../services/auth.service"
 import express, {Request, Response} from "express";
-import {UserDto} from "../dto/user.dto";
+import {UserDto, UserLoginDto} from "../dto/user.dto";
 import {injectable, inject} from "inversify";
 import {TYPES} from "../types";
 import "reflect-metadata"
@@ -22,8 +22,7 @@ export class AuthController {
 
     public createRouter() {
         const router = express.Router()
-        router.post('/register', validator(UserDto), this.register).post('/login',validator(UserDto),this.login)
+        router.post('/register', validator(UserDto), this.register).post('/login', validator(UserLoginDto), this.login)
         return router
     }
-
 }

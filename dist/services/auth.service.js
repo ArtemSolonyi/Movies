@@ -11,7 +11,9 @@ import { User } from "./user.service";
 import { injectable } from "inversify";
 import "reflect-metadata";
 import { User as UserModel } from '../models/User';
+import { Token } from "../models/Token";
 import { TokenService } from "./token.service";
+import bcrypt from "bcryptjs";
 let AuthService = class AuthService {
     constructor() {
     }
@@ -28,6 +30,26 @@ let AuthService = class AuthService {
             });
             const token = new TokenService(registeredUser);
             return await token.tokensForRegister();
+        }
+    }
+    async login(body) {
+        const user = await UserModel.findOne({ email: body.email });
+        if (user) {
+            const checkResemblanceDecodePassword = bcrypt.compareSync(body.password, user.password);
+            if (checkResemblanceDecodePassword) {
+                const instanceToken = new TokenService(user);
+                await instanceToken.groupingCreatedTokens();
+                console.log(instanceToken.tokens);
+                const awa = await Token.findOneAndUpdate({ user: user._id }, { accessToken: instanceToken.tokens.accessToken, refreshToken: instanceToken.tokens.refreshToken });
+                console.log(await Token.findOne({ user: user._id }));
+                return instanceToken.tokens;
+            }
+            else {
+                return { "message": "Password doesn't resemblance" };
+            }
+        }
+        else {
+            return { "message": "User not found", "status": 422 };
         }
     }
     async _checkForAvailableUser(user) {
