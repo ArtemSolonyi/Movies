@@ -1,18 +1,16 @@
-import {validate} from 'class-validator'
-import {ClassConstructor, plainToClass} from 'class-transformer'
-import {NextFunction, Request, Response} from "express";
+import {validate, ValidationError} from 'class-validator'
 
-export class ValidateMiddleware {
-    constructor(private classToValidate: ClassConstructor<object>) {}
+import {Request, Response, NextFunction} from 'express'
 
-    execute({body}: Request, res: Response, next: NextFunction):void {
-        const instance = plainToClass(this.classToValidate, body);
-        validate(instance).then((errors) => {
-            if (errors.length > 0) {
-                res.status(422).send(errors);
-            } else {
-                next();
-            }
-        });
+
+export function validator(DataTransferObject: any) {
+    return async function (req: Request, res: Response, next: NextFunction) {
+        const errors: ValidationError[] = await validate(Object.assign(new DataTransferObject(), req.body))
+        if (errors.length > 0) {
+            return res.status(200).json({"message": errors[0].constraints})
+        } else {
+            next()
+        }
+
     }
 }

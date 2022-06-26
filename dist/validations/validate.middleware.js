@@ -1,18 +1,13 @@
 import { validate } from 'class-validator';
-import { plainToClass } from 'class-transformer';
-export class ValidateMiddleware {
-    constructor(classToValidate) {
-        this.classToValidate = classToValidate;
-    }
-    execute({ body }, res, next) {
-        const instance = plainToClass(this.classToValidate, body);
-        validate(instance).then((errors) => {
-            if (errors.length > 0) {
-                res.status(422).send(errors);
-            }
-            else {
-                next();
-            }
-        });
-    }
+export function validator(DataTransferObject) {
+    return async function (req, res, next) {
+        const errors = await validate(Object.assign(new DataTransferObject(), req.body));
+        if (errors.length > 0) {
+            return res.status(200).json({ "message": errors[0].constraints });
+        }
+        else {
+            next();
+        }
+    };
 }
+//# sourceMappingURL=validate.middleware.js.map

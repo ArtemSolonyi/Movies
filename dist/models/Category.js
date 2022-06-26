@@ -6,3 +6,4 @@ const CategorySchema = new mongoose.Schema({
     },
 });
 export let Category = mongoose.model("Category", CategorySchema);
+//# sourceMappingURL=Category.js.map

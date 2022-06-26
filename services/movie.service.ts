@@ -8,7 +8,7 @@ import "reflect-metadata"
 
 @injectable()
 export class MovieService {
-    createMovie = async (body: MovieDto): Promise<object> => {
+    async createMovie (body: MovieDto): Promise<object> {
         try {
             const {title, description, category} = body
             const movie = await Movie.create({title, description, category: category})
@@ -17,22 +17,22 @@ export class MovieService {
             return e.message
         }
     }
-    createCategory = async (body: MovieDto) => {
+    async createCategory (body: MovieDto) {
         const {category} = body
         return await Category.create({category})
     }
-    getMovie = async (id: string) => {
+    async getMovie (id: string) {
         const movie = await Movie.findOne({_id: id})
         return {"movie": movie, status: 200}
     }
 
-    updateMovie = async (body: MovieDto) => {
+    async updateMovie (body: MovieDto){
         const {title, description, category} = body
         const movie = await Movie.updateOne({title, description, category})
         return {"movie": movie, status: 200}
     }
 
-    deleteMovie = async (id: string) => {
+    async deleteMovie (id: string){
         const movie = await Movie.deleteOne({_id: id})
         if (movie) {
             return {"movies": await Movie.find(), status: 200}

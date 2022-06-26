@@ -12,14 +12,15 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 import { TYPES } from "../types";
 import express from "express";
+import { MovieDto } from "../dto/movie.dto";
 import { injectable, inject } from "inversify";
 import { MovieService } from "../services/movie.service";
 import "reflect-metadata";
+import { validator } from "../validations/validate.middleware";
 let MovieController = class MovieController {
     constructor(movie) {
         this.movie = movie;
         this.createMovie = async (req, res) => {
-            console.log('inside');
             const result = await this.movie.createMovie(req.body);
             if (!result) {
                 return res.status(500).json({ "message": "Failed to create movie" });
@@ -61,9 +62,9 @@ let MovieController = class MovieController {
             }
             return res.status(200).json(result);
         };
-        this.movieRouter = () => {
+        this.createRouter = () => {
             const router = express.Router();
-            router.post("/", this.createMovie).get('/:id', this.getMovie).put('/', this.updateMovie).delete('/:id', this.deleteMovie).get('/category/:category', this.getMovieOfCategory).post('/category', this.createCategory);
+            router.post("/", [validator(MovieDto)], this.createMovie).get('/:id', this.getMovie).put('/', this.updateMovie).delete('/:id', this.deleteMovie).get('/category/:category', this.getMovieOfCategory).post('/category', this.createCategory);
             return router;
         };
     }
@@ -74,3 +75,4 @@ MovieController = __decorate([
     __metadata("design:paramtypes", [MovieService])
 ], MovieController);
 export { MovieController };
+//# sourceMappingURL=movie.controller.js.map

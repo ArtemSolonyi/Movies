@@ -1,5 +1,12 @@
 import mongoose from "mongoose"
 import validator from "validator"
+export interface IUser extends mongoose.Document {
+    username: string,
+    email:string,
+    password:string,
+    roles:string,
+    _id: mongoose.Types.ObjectId
+}
 
 const UserSchema = new mongoose.Schema({
     username: {
@@ -30,4 +37,4 @@ const UserSchema = new mongoose.Schema({
     }
 });
 
-export const User = mongoose.model("User", UserSchema);
+export const User = mongoose.model<IUser>("User", UserSchema);

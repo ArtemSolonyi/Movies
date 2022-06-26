@@ -3,8 +3,6 @@ const MovieSchema = new mongoose.Schema({
     title: {
         type: String,
         required: [true, "Must provide title"],
-        minlength: [3, "Short nickname will be highly them 3 symbols"],
-        maxlength: [18, "Long nickname will be lowly them 18 symbols"],
     },
     description: {
         type: String,
@@ -23,3 +21,4 @@ const MovieSchema = new mongoose.Schema({
     }
 });
 export const Movie = mongoose.model("Movie", MovieSchema);
+//# sourceMappingURL=Movie.js.map

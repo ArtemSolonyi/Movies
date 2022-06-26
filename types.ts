@@ -1,8 +1,8 @@
 export const TYPES = {
     Application: Symbol.for('Application'),
     MovieController: Symbol.for('MovieController'),
-    AuthController: Symbol.for('AuthController'),
     AuthService:Symbol.for('AuthService'),
-    UserService:Symbol.for('UserService'),
+    User:Symbol.for('User'),
+    AuthController:Symbol.for('AuthController'),
     MovieService:Symbol.for('MovieService')
 }

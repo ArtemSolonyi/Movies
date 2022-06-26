@@ -11,15 +11,24 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 import { AuthService } from "../services/auth.service";
+import express from "express";
+import { UserDto } from "../dto/user.dto";
 import { injectable, inject } from "inversify";
 import { TYPES } from "../types";
 import "reflect-metadata";
+import { validator } from "../validations/validate.middleware";
 let AuthController = class AuthController {
-    constructor(auth) {
-        this.auth = auth;
+    constructor(authService) {
+        this.authService = authService;
         this.register = async (req, res) => {
-            return await this.auth.getRegisteredUser(req.body);
+            const result = await this.authService.getRegisteredUser(req.body);
+            return res.status(200).json(result);
         };
+    }
+    createRouter() {
+        const router = express.Router();
+        router.post('/', validator(UserDto), this.register);
+        return router;
     }
 };
 AuthController = __decorate([
@@ -28,3 +37,4 @@ AuthController = __decorate([
     __metadata("design:paramtypes", [AuthService])
 ], AuthController);
 export { AuthController };
+//# sourceMappingURL=auth.controller.js.map

@@ -6,6 +6,7 @@ import "reflect-metadata"
 import {injectable, inject} from "inversify";
 import {TYPES} from "./types";
 import {MovieController} from "./controllers/movie.controller";
+import {AuthController} from "./controllers/auth.controller";
 
 
 dotenv.config()
@@ -15,7 +16,7 @@ export class App {
     app: Express
     port: number | string
 
-    constructor(@inject(TYPES.MovieController) private movie: MovieController) {
+    constructor(@inject(TYPES.MovieController) private movieController: MovieController,@inject(TYPES.AuthController) private authController: AuthController) {
         this.app = express()
         this.port = process.env.PORT || 3020
         this.app.use(pkg())
@@ -23,7 +24,8 @@ export class App {
     }
 
     useRoutes() {
-        this.app.use('/api/v1/movies', this.movie.movieRouter())
+        this.app.use('/api/v1/movies', this.movieController.createRouter())
+        this.app.use('/api/v1/auth',this.authController.createRouter())
     }
 
     async _start() {

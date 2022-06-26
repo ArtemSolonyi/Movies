@@ -10,41 +10,42 @@ import { injectable } from "inversify";
 import "reflect-metadata";
 let MovieService = class MovieService {
     constructor() {
-        this.createMovie = async (body) => {
-            try {
-                const { title, description, category } = body;
-                const movie = await Movie.create({ title, description, category: category });
-                return { "movie": movie };
-            }
-            catch (e) {
-                return e.message;
-            }
-        };
-        this.createCategory = async (body) => {
-            const { category } = body;
-            return await Category.create({ category });
-        };
-        this.getMovie = async (id) => {
-            const movie = await Movie.findOne({ _id: id });
-            return { "movie": movie, status: 200 };
-        };
-        this.updateMovie = async (body) => {
-            const { title, description, category } = body;
-            const movie = await Movie.updateOne({ title, description, category });
-            return { "movie": movie, status: 200 };
-        };
-        this.deleteMovie = async (id) => {
-            const movie = await Movie.deleteOne({ _id: id });
-            if (movie) {
-                return { "movies": await Movie.find(), status: 200 };
-            }
-        };
         this.movieOfCategory = async (category) => {
             return await Movie.find({ category: category });
         };
+    }
+    async createMovie(body) {
+        try {
+            const { title, description, category } = body;
+            const movie = await Movie.create({ title, description, category: category });
+            return { "movie": movie };
+        }
+        catch (e) {
+            return e.message;
+        }
+    }
+    async createCategory(body) {
+        const { category } = body;
+        return await Category.create({ category });
+    }
+    async getMovie(id) {
+        const movie = await Movie.findOne({ _id: id });
+        return { "movie": movie, status: 200 };
+    }
+    async updateMovie(body) {
+        const { title, description, category } = body;
+        const movie = await Movie.updateOne({ title, description, category });
+        return { "movie": movie, status: 200 };
+    }
+    async deleteMovie(id) {
+        const movie = await Movie.deleteOne({ _id: id });
+        if (movie) {
+            return { "movies": await Movie.find(), status: 200 };
+        }
     }
 };
 MovieService = __decorate([
     injectable()
 ], MovieService);
 export { MovieService };
+//# sourceMappingURL=movie.service.js.map

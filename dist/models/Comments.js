@@ -15,3 +15,4 @@ const CommentSchema = new mongoose.Schema({
     }
 });
 export const Movie = mongoose.model("Comment", CommentSchema);
+//# sourceMappingURL=Comments.js.map

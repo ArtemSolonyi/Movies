@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 import {injectable, inject} from "inversify";
 import {MovieService} from "../services/movie.service";
 import "reflect-metadata"
-
+import {validator} from "../validations/validate.middleware";
 
 @injectable()
 export class MovieController {
@@ -14,7 +14,6 @@ export class MovieController {
     }
 
     private createMovie = async (req: Request<{}, {}, MovieDto>, res: Response) => {
-        console.log('inside')
         const result = await this.movie.createMovie(req.body)
         if (!result) {
             return res.status(500).json({"message": "Failed to create movie"})
@@ -58,9 +57,10 @@ export class MovieController {
         }
         return res.status(200).json(result)
     }
-    public movieRouter = () => {
+
+    public createRouter = () => {
         const router = express.Router()
-        router.post("/", this.createMovie).get('/:id', this.getMovie).put('/', this.updateMovie).delete('/:id', this.deleteMovie).get('/category/:category', this.getMovieOfCategory).post('/category', this.createCategory)
+        router.post("/", [validator(MovieDto)], this.createMovie).get('/:id', this.getMovie).put('/', this.updateMovie).delete('/:id', this.deleteMovie).get('/category/:category', this.getMovieOfCategory).post('/category', this.createCategory)
         return router
     }
 }
