@@ -6,7 +6,6 @@ export interface IToken extends mongoose.Document {
     user: mongoose.Types.ObjectId,
     _id: mongoose.Types.ObjectId,
 
-
 }
 const TokenSchema = new mongoose.Schema({
     accessToken: {

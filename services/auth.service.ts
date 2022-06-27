@@ -4,9 +4,10 @@ import {injectable} from "inversify";
 import "reflect-metadata"
 import mongoose from "mongoose"
 import {IUser, User as UserModel} from '../models/User'
-import {Token} from "../models/Token"
+import {Token, IToken} from "../models/Token"
 import {TokenService} from "./token.service";
 import bcrypt from "bcryptjs";
+
 
 @injectable()
 export class AuthService {
@@ -33,11 +34,8 @@ export class AuthService {
         if (user) {
             const checkResemblanceDecodePassword = bcrypt.compareSync(body.password, user.password);
             if (checkResemblanceDecodePassword) {
-                const instanceToken = new TokenService(user)
-                await instanceToken.groupingCreatedTokens()
-                // @ts-ignore
-                await Token.findOneAndUpdate({user:user._id},{accessToken: instanceToken.tokens.accessToken, refreshToken: instanceToken.tokens.refreshToken})
-                return instanceToken.tokens
+                const tokenService: TokenService = new TokenService(user)
+                return await tokenService.updateTokens()
             } else {
                 return {"message": "Password doesn't resemblance"}
             }
@@ -47,8 +45,19 @@ export class AuthService {
 
     }
 
+    public async getUpdatedTokens(refreshToken: string) {
+        const confirmationTokenInAvailable: IToken | null = await Token.findOne({refreshToken: refreshToken})
+        if (confirmationTokenInAvailable) {
+            const user: (IUser & mongoose.Document) | null = await UserModel.findOne({_id: confirmationTokenInAvailable.user})
+            const tokenService = new TokenService(user)
+            return await tokenService.updateTokens()
+        }else{
+            return {"message": "refreshToken not found", "status": 422}
+        }
+    }
 
-    private async _checkForAvailableUser(user: User) {
+
+    private async _checkForAvailableUser(user: User): Promise<boolean> {
         type IType = IUser & mongoose.Document
         const candidateUserWithUsername: IType | null = await UserModel.findOne({username: user.username})
         const candidateUserWithEmail: IType | null = await UserModel.findOne({email: user.email})

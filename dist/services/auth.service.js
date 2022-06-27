@@ -37,12 +37,8 @@ let AuthService = class AuthService {
         if (user) {
             const checkResemblanceDecodePassword = bcrypt.compareSync(body.password, user.password);
             if (checkResemblanceDecodePassword) {
-                const instanceToken = new TokenService(user);
-                await instanceToken.groupingCreatedTokens();
-                console.log(instanceToken.tokens);
-                const awa = await Token.findOneAndUpdate({ user: user._id }, { accessToken: instanceToken.tokens.accessToken, refreshToken: instanceToken.tokens.refreshToken });
-                console.log(await Token.findOne({ user: user._id }));
-                return instanceToken.tokens;
+                const tokenService = new TokenService(user);
+                return await tokenService.updateTokens();
             }
             else {
                 return { "message": "Password doesn't resemblance" };
@@ -50,6 +46,17 @@ let AuthService = class AuthService {
         }
         else {
             return { "message": "User not found", "status": 422 };
+        }
+    }
+    async getUpdatedTokens(refreshToken) {
+        const confirmationTokenInAvailable = await Token.findOne({ refreshToken: refreshToken });
+        if (confirmationTokenInAvailable) {
+            const user = await UserModel.findOne({ _id: confirmationTokenInAvailable.user });
+            const tokenService = new TokenService(user);
+            return await tokenService.updateTokens();
+        }
+        else {
+            return { "message": "refreshToken not found", "status": 422 };
         }
     }
     async _checkForAvailableUser(user) {

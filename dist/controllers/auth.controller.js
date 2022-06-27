@@ -17,6 +17,7 @@ import { injectable, inject } from "inversify";
 import { TYPES } from "../types";
 import "reflect-metadata";
 import { validator } from "../validations/validate.middleware";
+import { TokenDto } from "../dto/token.dto";
 let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
@@ -28,10 +29,14 @@ let AuthController = class AuthController {
             const result = await this.authService.login(req.body);
             return res.status(200).json(result);
         };
+        this.refresh = async (req, res) => {
+            const result = await this.authService.getUpdatedTokens(req.body.refreshToken);
+            return res.status(200).json(result);
+        };
     }
     createRouter() {
         const router = express.Router();
-        router.post('/register', validator(UserDto), this.register).post('/login', validator(UserLoginDto), this.login);
+        router.post('/register', validator(UserDto), this.register).post('/login', validator(UserLoginDto), this.login).put('/refresh', validator(TokenDto), this.refresh);
         return router;
     }
 };

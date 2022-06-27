@@ -4,19 +4,19 @@ import {IUser} from "../models/User";
 import {Token, IToken} from "../models/Token";
 
 export class TokenService {
-    private user: (IUser & mongoose.Document)
+    private user: (IUser & mongoose.Document)|null
     private accessToken: string
     private refreshToken: string
 
-    constructor(user: (IUser & mongoose.Document)) {
+    constructor(user: (IUser & mongoose.Document)|null) {
         this.user = user
     }
 
     public async groupingCreatedTokens(): Promise<void> {
         const payloadData = {
-            userId: this.user.id,
-            email: this.user.email,
-            username: this.user.username
+            userId: this.user?.id,
+            email: this.user?.email,
+            username: this.user?.username
         }
         // @ts-ignore
         this.accessToken = await this._createToken(payloadData, "process.env.SECRET_KEY_ACCESS_JWT", "30m")
@@ -29,18 +29,26 @@ export class TokenService {
         return jwt.sign(payloadData, secretKey, {expiresIn: timeExpire});
     }
 
-    public async saveTokens() {
+    public async saveCreatedTokens() {
         type IType = IToken & mongoose.Document
         const savedTokens: IType = await Token.create({
-            user: this.user.id,
+            user: this.user?.id,
             accessToken: this.accessToken,
             refreshToken: this.refreshToken
         })
     }
-
+    public async updateTokens(){
+        await  this.groupingCreatedTokens()
+        const objectWithTokens: any = this.tokens
+        await Token.findOneAndUpdate({user: this.user?.id}, {
+            accessToken: objectWithTokens.accessToken,
+            refreshToken: objectWithTokens.refreshToken
+        })
+        return objectWithTokens
+    }
     public async tokensForRegister() {
         await this.groupingCreatedTokens()
-        await this.saveTokens()
+        await this.saveCreatedTokens()
         return this.tokens
     }
 
