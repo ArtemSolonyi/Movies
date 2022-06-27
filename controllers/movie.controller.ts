@@ -1,6 +1,6 @@
 import {TYPES} from "../types";
 import express, {Request, Response, Router} from "express";
-import {MovieDto} from "../dto/movie.dto";
+import {MovieDto, updateMovieDto} from "../dto/movie.dto";
 import mongoose from "mongoose";
 import {injectable, inject} from "inversify";
 import {MovieService} from "../services/movie.service";
@@ -20,7 +20,7 @@ export class MovieController {
         }
         return res.status(200).json(result)
     }
-    private updateMovie = async (req: Request<{}, {}, MovieDto>, res: Response) => {
+    private updateMovie = async (req: Request<{}, {}, updateMovieDto>, res: Response) => {
         const result = await this.movie.updateMovie(req.body)
         if (!result) {
             return res.status(500).json({"message": "Failed to update movie"})
@@ -57,10 +57,9 @@ export class MovieController {
         }
         return res.status(200).json(result)
     }
-
     public createRouter = () => {
         const router = express.Router()
-        router.post("/", [validator(MovieDto)], this.createMovie).get('/:id', this.getMovie).put('/', this.updateMovie).delete('/:id', this.deleteMovie).get('/category/:category', this.getMovieOfCategory).post('/category', this.createCategory)
+        router.post("/", [validator(MovieDto)], this.createMovie).get('/:id', this.getMovie).put('/',validator(updateMovieDto),this.updateMovie).delete('/:id', this.deleteMovie).get('/category/:category', this.getMovieOfCategory).post('/category', this.createCategory)
         return router
     }
 }

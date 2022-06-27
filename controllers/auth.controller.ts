@@ -5,8 +5,8 @@ import {injectable, inject} from "inversify";
 import {TYPES} from "../types";
 import "reflect-metadata"
 import {validator} from "../validations/validate.middleware";
-import {MovieDto} from "../dto/movie.dto";
 import {TokenDto} from "../dto/token.dto";
+
 
 @injectable()
 export class AuthController {

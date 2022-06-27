@@ -23,13 +23,9 @@ __decorate([
     __metadata("design:type", String)
 ], MovieDto.prototype, "description", void 0);
 __decorate([
-    MinLength(1, { each: true }),
-    MaxLength(40, { each: true }),
     IsString(),
     __metadata("design:type", String)
 ], MovieDto.prototype, "category", void 0);
-__decorate([
-    IsString(),
-    __metadata("design:type", String)
-], MovieDto.prototype, "id", void 0);
+export class updateMovieDto extends MovieDto {
+}
 //# sourceMappingURL=movie.dto.js.map

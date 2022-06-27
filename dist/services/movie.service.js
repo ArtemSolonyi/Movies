@@ -33,8 +33,10 @@ let MovieService = class MovieService {
         return { "movie": movie, status: 200 };
     }
     async updateMovie(body) {
-        const { title, description, category } = body;
-        const movie = await Movie.updateOne({ title, description, category });
+        console.log(body);
+        const { title, description, category, rating, id } = body;
+        const movie = await Movie.findOneAndUpdate({ _id: id }, { title, description, category, rating });
+        console.log(movie);
         return { "movie": movie, status: 200 };
     }
     async deleteMovie(id) {

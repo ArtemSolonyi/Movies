@@ -1,19 +1,21 @@
-import {Contains, isBoolean, isEmail, IsString, isString, MaxLength, MinLength, minLength} from "class-validator";
+import {IsString, MaxLength, MinLength} from "class-validator";
+import mongoose from "mongoose";
 
 export class MovieDto {
-    @MinLength( 1, { each: true } )
-    @MaxLength( 40, { each: true } )
-    @IsString()
-    title:string;
-    @MinLength( 1, { each: true } )
-    @MaxLength( 200, { each: true } )
-    @IsString()
-    description:string;
-    @MinLength( 1, { each: true } )
-    @MaxLength( 40, { each: true } )
-    @IsString()
-    category:string;
 
+    @MinLength(1, {each: true})
+    @MaxLength(40, {each: true})
     @IsString()
-    id:string;
+    title: string;
+    @MinLength(1, {each: true})
+    @MaxLength(200, {each: true})
+    @IsString()
+    description: string;
+    @IsString()
+    category: string
+
+}
+export class updateMovieDto extends  MovieDto{
+    id:mongoose.Types.ObjectId
+    rating:number
 }
