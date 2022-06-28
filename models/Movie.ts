@@ -1,6 +1,6 @@
 import mongoose from "mongoose"
 
-interface IMovie extends mongoose.Document {
+export interface IMovie extends mongoose.Document {
     title: string,
     description: mongoose.Types.ObjectId,
     _id: mongoose.Types.ObjectId,
@@ -22,9 +22,6 @@ const MovieSchema = new mongoose.Schema({
     rating: {
         type: Number,
         required: false,
-    },
-    ratingsUsers: {
-        type: [{type: mongoose.Types.ObjectId, ref: "Rating"}]
     },
     category: {
         type: mongoose.Types.ObjectId,

@@ -11,8 +11,6 @@ import bcrypt from "bcryptjs";
 
 @injectable()
 export class AuthService {
-    constructor() {
-    }
 
     async getRegisteredUser(body: UserDto) {
         const user = new User(body)
@@ -46,9 +44,9 @@ export class AuthService {
     }
 
     public async getUpdatedTokens(refreshToken: string) {
-        const confirmationTokenInAvailable: IToken | null = await Token.findOne({refreshToken: refreshToken})
+        const confirmationTokenInAvailable: IToken | null = await Token.findOne({refreshToken: refreshToken}).lean()
         if (confirmationTokenInAvailable) {
-            const user: (IUser & mongoose.Document) | null = await UserModel.findOne({_id: confirmationTokenInAvailable.user})
+            const user: (IUser & mongoose.Document) | null = await UserModel.findOne({_id: confirmationTokenInAvailable.user}).lean()
             const tokenService = new TokenService(user)
             return await tokenService.updateTokens()
         }else{
@@ -59,8 +57,8 @@ export class AuthService {
 
     private async _checkForAvailableUser(user: User): Promise<boolean> {
         type IType = IUser & mongoose.Document
-        const candidateUserWithUsername: IType | null = await UserModel.findOne({username: user.username})
-        const candidateUserWithEmail: IType | null = await UserModel.findOne({email: user.email})
+        const candidateUserWithUsername: IType | null = await UserModel.findOne({username: user.username}).lean()
+        const candidateUserWithEmail: IType | null = await UserModel.findOne({email: user.email}).lean()
         return !!(candidateUserWithUsername || candidateUserWithEmail)
     }
 }

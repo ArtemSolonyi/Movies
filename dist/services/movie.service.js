@@ -5,15 +5,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import { Movie } from '../models/Movie';
+import { Rating } from '../models/Rating';
 import { Category } from "../models/Category";
+import mongoose from "mongoose";
 import { injectable } from "inversify";
 import "reflect-metadata";
 let MovieService = class MovieService {
-    constructor() {
-        this.movieOfCategory = async (category) => {
-            return await Movie.find({ category: category });
-        };
-    }
     async createMovie(body) {
         try {
             const { title, description, category } = body;
@@ -29,21 +26,38 @@ let MovieService = class MovieService {
         return await Category.create({ category });
     }
     async getMovie(id) {
-        const movie = await Movie.findOne({ _id: id });
+        const movie = await Movie.findOne({ _id: id }).lean();
         return { "movie": movie, status: 200 };
     }
     async updateMovie(body) {
-        console.log(body);
-        const { title, description, category, rating, id } = body;
-        const movie = await Movie.findOneAndUpdate({ _id: id }, { title, description, category, rating });
-        console.log(movie);
+        const { title, description, category, id } = body;
+        const movie = await Movie.findOneAndUpdate({ _id: id }, { title, description, category }).lean();
         return { "movie": movie, status: 200 };
     }
     async deleteMovie(id) {
-        const movie = await Movie.deleteOne({ _id: id });
+        const movie = await Movie.deleteOne({ _id: id }).lean();
         if (movie) {
             return { "movies": await Movie.find(), status: 200 };
         }
+    }
+    async movieOfCategory(category) {
+        return await Movie.find({ category: category });
+    }
+    async setRatingFromUser(body) {
+        const ObjectId = mongoose.Types.ObjectId;
+        const { movieId, userId, rating } = body;
+        const updateRating = await Rating.findOneAndUpdate({ movie: movieId, user: userId }, { rating: rating });
+        if (!updateRating) {
+            await Rating.create({ movie: movieId, user: userId, rating: rating });
+        }
+        const ratings = await Rating.aggregate([{ $match: { movie: ObjectId(`${movieId}`) } }, {
+                "$group": {
+                    _id: null,
+                    "ratingAvg": { "$avg": "$rating" }
+                }
+            }]).exec();
+        const movie = await Movie.findOneAndUpdate({ _id: movieId }, { rating: ratings[0].ratingAvg }, { returnDocument: 'after' });
+        return movie;
     }
 };
 MovieService = __decorate([

@@ -12,11 +12,12 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 import { TYPES } from "../types";
 import express from "express";
-import { MovieDto, updateMovieDto } from "../dto/movie.dto";
+import { MovieDto, setRatingMovieDto, updateMovieDto } from "../dto/movie.dto";
 import { injectable, inject } from "inversify";
 import { MovieService } from "../services/movie.service";
 import "reflect-metadata";
 import { validator } from "../validations/validate.middleware";
+import { Authorization } from "../middlewares/checkUser";
 let MovieController = class MovieController {
     constructor(movie) {
         this.movie = movie;
@@ -62,9 +63,16 @@ let MovieController = class MovieController {
             }
             return res.status(200).json(result);
         };
+        this.getSetRatingToMovieFromUser = async (req, res) => {
+            const result = await this.movie.setRatingFromUser(req.body);
+            if (!result) {
+                return res.status(500).json({ "message": "Failed to create category" });
+            }
+            return res.status(200).json(result);
+        };
         this.createRouter = () => {
             const router = express.Router();
-            router.post("/", [validator(MovieDto)], this.createMovie).get('/:id', this.getMovie).put('/', validator(updateMovieDto), this.updateMovie).delete('/:id', this.deleteMovie).get('/category/:category', this.getMovieOfCategory).post('/category', this.createCategory);
+            router.post("/", [validator(MovieDto)], this.createMovie).get('/:id', this.getMovie).put('/', validator(updateMovieDto), this.updateMovie).delete('/:id', this.deleteMovie).get('/category/:category', this.getMovieOfCategory).post('/category', this.createCategory).patch('/rating', new Authorization().checkUser, validator(setRatingMovieDto), this.getSetRatingToMovieFromUser);
             return router;
         };
     }

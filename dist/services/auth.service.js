@@ -4,9 +4,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
 import { User } from "./user.service";
 import { injectable } from "inversify";
 import "reflect-metadata";
@@ -15,8 +12,6 @@ import { Token } from "../models/Token";
 import { TokenService } from "./token.service";
 import bcrypt from "bcryptjs";
 let AuthService = class AuthService {
-    constructor() {
-    }
     async getRegisteredUser(body) {
         const user = new User(body);
         if (await this._checkForAvailableUser(user)) {
@@ -49,9 +44,9 @@ let AuthService = class AuthService {
         }
     }
     async getUpdatedTokens(refreshToken) {
-        const confirmationTokenInAvailable = await Token.findOne({ refreshToken: refreshToken });
+        const confirmationTokenInAvailable = await Token.findOne({ refreshToken: refreshToken }).lean();
         if (confirmationTokenInAvailable) {
-            const user = await UserModel.findOne({ _id: confirmationTokenInAvailable.user });
+            const user = await UserModel.findOne({ _id: confirmationTokenInAvailable.user }).lean();
             const tokenService = new TokenService(user);
             return await tokenService.updateTokens();
         }
@@ -60,14 +55,13 @@ let AuthService = class AuthService {
         }
     }
     async _checkForAvailableUser(user) {
-        const candidateUserWithUsername = await UserModel.findOne({ username: user.username });
-        const candidateUserWithEmail = await UserModel.findOne({ email: user.email });
+        const candidateUserWithUsername = await UserModel.findOne({ username: user.username }).lean();
+        const candidateUserWithEmail = await UserModel.findOne({ email: user.email }).lean();
         return !!(candidateUserWithUsername || candidateUserWithEmail);
     }
 };
 AuthService = __decorate([
-    injectable(),
-    __metadata("design:paramtypes", [])
+    injectable()
 ], AuthService);
 export { AuthService };
 //# sourceMappingURL=auth.service.js.map

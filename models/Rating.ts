@@ -1,5 +1,5 @@
 import mongoose, {Schema} from "mongoose"
-interface IRating extends mongoose.Document {
+export interface IRating extends mongoose.Document {
     movie: mongoose.Types.ObjectId,
     _id: mongoose.Types.ObjectId,
     user:mongoose.Types.ObjectId,
@@ -9,6 +9,7 @@ interface IRating extends mongoose.Document {
 const RatingSchema: Schema = new mongoose.Schema({
     movie: {
         type:mongoose.Types.ObjectId,
+        ref:"Movie",
         required: true,
     },
     rating:{
@@ -17,7 +18,12 @@ const RatingSchema: Schema = new mongoose.Schema({
     },
     user:{
         type:mongoose.Types.ObjectId,
+        ref:"User",
         required:true
+    },
+    ratingAvg:{
+        type:Number,
+        required:false
     }
 });
 

@@ -1,5 +1,6 @@
 import {Movie} from '../models/Movie'
-import {MovieDto, updateMovieDto} from "../dto/movie.dto";
+import {Rating} from '../models/Rating'
+import {MovieDto, setRatingMovieDto, updateMovieDto} from "../dto/movie.dto";
 import {Category} from "../models/Category"
 import mongoose from "mongoose";
 import {injectable} from "inversify";
@@ -24,28 +25,44 @@ export class MovieService {
     }
 
     async getMovie(id: string) {
-        const movie = await Movie.findOne({_id: id})
+        const movie = await Movie.findOne({_id: id}).lean()
         return {"movie": movie, status: 200}
     }
 
     async updateMovie(body: updateMovieDto) {
-        const {title, description, category, rating, id} = body
-        const movie = await Movie.findOneAndUpdate({_id: id}, {title, description, category, rating})
+        const {title, description, category, id} = body
+        const movie = await Movie.findOneAndUpdate({_id: id}, {title, description, category}).lean()
         return {"movie": movie, status: 200}
     }
 
     async deleteMovie(id: string) {
-        const movie = await Movie.deleteOne({_id: id})
+        const movie = await Movie.deleteOne({_id: id}).lean()
         if (movie) {
             return {"movies": await Movie.find(), status: 200}
         }
     }
 
-    movieOfCategory = async (category: mongoose.Types.ObjectId) => {
+    async movieOfCategory(category: mongoose.Types.ObjectId) {
         return await Movie.find({category: category})
+    }
+
+    async setRatingFromUser(body: setRatingMovieDto) {
+        const ObjectId: any = mongoose.Types.ObjectId;
+        const {movieId, userId, rating} = body
+        const updateRating = await Rating.findOneAndUpdate({movie: movieId, user: userId}, {rating: rating})
+        if (!updateRating) {
+            await Rating.create({movie: movieId, user: userId, rating: rating})
+        }
+        const ratings: any = await Rating.aggregate([{$match: {movie: ObjectId(`${movieId}`)}}, {
+            "$group": {
+                _id: null,
+                "ratingAvg": {"$avg": "$rating"}
+            }
+        }]).exec()
+        return await Movie.findOneAndUpdate({_id: movieId}, {rating: ratings[0].ratingAvg}, {returnDocument: 'after'})
+
+
     }
 
 
 }
-
-

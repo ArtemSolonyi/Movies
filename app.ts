@@ -8,7 +8,6 @@ import {TYPES} from "./types";
 import {MovieController} from "./controllers/movie.controller";
 import {AuthController} from "./controllers/auth.controller";
 
-
 dotenv.config()
 
 @injectable()
