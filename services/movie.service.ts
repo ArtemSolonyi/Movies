@@ -49,7 +49,7 @@ export class MovieService {
     async setRatingFromUser(body: setRatingMovieDto) {
         const ObjectId: any = mongoose.Types.ObjectId;
         const {movieId, userId, rating} = body
-        const updateRating = await Rating.findOneAndUpdate({movie: movieId, user: userId}, {rating: rating})
+        const updateRating = await Rating.findOneAndUpdate({movie: movieId, user: userId}, {rating: rating}).lean()
         if (!updateRating) {
             await Rating.create({movie: movieId, user: userId, rating: rating})
         }
@@ -59,7 +59,7 @@ export class MovieService {
                 "ratingAvg": {"$avg": "$rating"}
             }
         }]).exec()
-        return await Movie.findOneAndUpdate({_id: movieId}, {rating: ratings[0].ratingAvg}, {returnDocument: 'after'})
+        return await Movie.findOneAndUpdate({_id: movieId}, {rating: ratings[0].ratingAvg}, {returnDocument: 'after'}).lean()
 
 
     }

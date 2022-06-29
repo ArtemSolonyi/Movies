@@ -27,6 +27,18 @@ let AuthService = class AuthService {
             return await token.tokensForRegister();
         }
     }
+    async logout(userId) {
+        try {
+            await Token.findOneAndUpdate({ user: userId }, {
+                accessToken: null,
+                refreshToken: null
+            }, { resultDocument: 'after' });
+            return { "message": "Logout successfully" };
+        }
+        catch (e) {
+            return { e };
+        }
+    }
     async login(body) {
         const user = await UserModel.findOne({ email: body.email });
         if (user) {

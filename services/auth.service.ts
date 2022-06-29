@@ -7,7 +7,7 @@ import {IUser, User as UserModel} from '../models/User'
 import {Token, IToken} from "../models/Token"
 import {TokenService} from "./token.service";
 import bcrypt from "bcryptjs";
-
+import jwt from 'jsonwebtoken'
 
 @injectable()
 export class AuthService {
@@ -24,6 +24,19 @@ export class AuthService {
             })
             const token = new TokenService(registeredUser)
             return await token.tokensForRegister()
+        }
+    }
+
+    async logout(userId: string) {
+        
+        try {
+            await Token.findOneAndUpdate({user: userId}, {
+                accessToken: null,
+                refreshToken: null
+            }, {resultDocument: 'after'})
+            return {"message":"Logout successfully"}
+        } catch (e) {
+            return {e}
         }
     }
 
@@ -49,7 +62,7 @@ export class AuthService {
             const user: (IUser & mongoose.Document) | null = await UserModel.findOne({_id: confirmationTokenInAvailable.user}).lean()
             const tokenService = new TokenService(user)
             return await tokenService.updateTokens()
-        }else{
+        } else {
             return {"message": "refreshToken not found", "status": 422}
         }
     }

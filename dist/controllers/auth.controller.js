@@ -18,6 +18,7 @@ import { TYPES } from "../types";
 import "reflect-metadata";
 import { validator } from "../validations/validate.middleware";
 import { TokenDto } from "../dto/token.dto";
+import { Authorization } from "../middlewares/checkUser";
 let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
@@ -29,6 +30,10 @@ let AuthController = class AuthController {
             const result = await this.authService.login(req.body);
             return res.status(200).json(result);
         };
+        this.logout = async (req, res) => {
+            const result = await this.authService.logout(req.body.userId);
+            return res.status(200).json(result);
+        };
         this.refresh = async (req, res) => {
             const result = await this.authService.getUpdatedTokens(req.body.refreshToken);
             return res.status(200).json(result);
@@ -36,7 +41,7 @@ let AuthController = class AuthController {
     }
     createRouter() {
         const router = express.Router();
-        router.post('/register', validator(UserDto), this.register).post('/login', validator(UserLoginDto), this.login).put('/refresh', validator(TokenDto), this.refresh);
+        router.post('/register', validator(UserDto), this.register).post('/login', validator(UserLoginDto), this.login).put('/refresh', validator(TokenDto), this.refresh).delete('/logout', new Authorization().checkUser, this.logout);
         return router;
     }
 };
