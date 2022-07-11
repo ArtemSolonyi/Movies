@@ -22,8 +22,8 @@ export class AuthController {
         const result = await this.authService.login(req.body)
         return res.status(200).json(result)
     }
-    private logout = async (req: Request, res: Response) => {
-        const result = await this.authService.logout(req.body.userId)
+    private logout = async (req: Request<{},{},{},{userId:string}>, res: Response) => {
+        const result = await this.authService.logout(req.query.userId)
         return res.status(200).json(result)
     }
     private refresh = async (req: Request<{ refreshToken: string }, {}, TokenDto, {}>, res: Response) => {
@@ -33,7 +33,7 @@ export class AuthController {
 
     public createRouter() {
         const router = express.Router()
-        router.post('/register', validator(UserDto), this.register).post('/login', validator(UserLoginDto), this.login).put('/refresh', validator(TokenDto), this.refresh).delete('/logout', new Authorization().checkUser, this.logout)
+        router.post('/register', validator(UserDto), this.register).post('/login', validator(UserLoginDto), this.login).post('/refresh', validator(TokenDto), this.refresh).delete('/logout/',this.logout)
         return router
     }
 }

@@ -7,8 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { IsNumber, IsString, MaxLength, MinLength } from "class-validator";
-import mongoose from "mongoose";
+import { IsOptional, IsString, MaxLength, MinLength } from "class-validator";
 export class MovieDto {
 }
 __decorate([
@@ -27,20 +26,29 @@ __decorate([
     IsString(),
     __metadata("design:type", String)
 ], MovieDto.prototype, "category", void 0);
+export class FilesOfMovieDto {
+}
 export class updateMovieDto extends MovieDto {
 }
+export class getCategoriesMovie {
+}
+__decorate([
+    IsOptional(),
+    MinLength(1, { each: true }),
+    __metadata("design:type", String)
+], getCategoriesMovie.prototype, "category", void 0);
 export class setRatingMovieDto {
 }
 __decorate([
-    IsString(),
-    __metadata("design:type", mongoose.Types.ObjectId)
+    IsOptional(),
+    __metadata("design:type", String)
 ], setRatingMovieDto.prototype, "movieId", void 0);
 __decorate([
-    IsString(),
-    __metadata("design:type", mongoose.Types.ObjectId)
+    IsOptional(),
+    __metadata("design:type", String)
 ], setRatingMovieDto.prototype, "userId", void 0);
 __decorate([
-    IsNumber(),
+    IsOptional(),
     __metadata("design:type", Number)
 ], setRatingMovieDto.prototype, "rating", void 0);
 //# sourceMappingURL=movie.dto.js.map

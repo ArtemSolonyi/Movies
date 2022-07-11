@@ -4,11 +4,11 @@ import {IUser} from "../models/User";
 import {Token, IToken} from "../models/Token";
 
 export class TokenService {
-    private user: (IUser & mongoose.Document)|null
-    private accessToken: string
-    private refreshToken: string
+    private user: (IUser & mongoose.Document) | null
+    private _accessToken: string
+    private _refreshToken: string
 
-    constructor(user: (IUser & mongoose.Document)|null) {
+    constructor(user: (IUser & mongoose.Document) | null) {
         this.user = user
     }
 
@@ -19,9 +19,9 @@ export class TokenService {
             username: this.user?.username
         }
         // @ts-ignore
-        this.accessToken = await this._createToken(payloadData, "process.env.SECRET_KEY_ACCESS_JWT", "30m")
+        this._accessToken = await this._createToken(payloadData, "process.env.SECRET_KEY_ACCESS_JWT", "15m")
         // @ts-ignore
-        this.refreshToken = await this._createToken(payloadData, "process.env.SECRET_KEY_REFRESH_JWT", "30d")
+        this._refreshToken = await this._createToken(payloadData, "process.env.SECRET_KEY_REFRESH_JWT", '30d')
     }
 
 
@@ -33,26 +33,29 @@ export class TokenService {
         type IType = IToken & mongoose.Document
         const savedTokens: IType = await Token.create({
             user: this.user?.id,
-            accessToken: this.accessToken,
-            refreshToken: this.refreshToken
+            accessToken: this._accessToken,
+            refreshToken: this._refreshToken
         })
     }
-    public async updateTokens(){
-        await  this.groupingCreatedTokens()
-        const objectWithTokens: any = this.tokens
+    public get accessToken(){
+        return this._accessToken
+    }
+    public get refreshToken(){
+        return this._refreshToken
+    }
+    public async updateTokens() {
+        await this.groupingCreatedTokens()
         await Token.findOneAndUpdate({user: this.user?.id}, {
-            accessToken: objectWithTokens.accessToken,
-            refreshToken: objectWithTokens.refreshToken
-        })
-        return objectWithTokens
+            accessToken: this._accessToken,
+            refreshToken:this._refreshToken
+        },)
+
     }
+
     public async tokensForRegister() {
         await this.groupingCreatedTokens()
         await this.saveCreatedTokens()
-        return this.tokens
     }
 
-    public get tokens(): object {
-        return {accessToken: this.accessToken, refreshToken: this.refreshToken}
-    }
+
 }

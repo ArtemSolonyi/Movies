@@ -10,11 +10,25 @@ import { Category } from "../models/Category";
 import mongoose from "mongoose";
 import { injectable } from "inversify";
 import "reflect-metadata";
+import slugify from "slugify";
 let MovieService = class MovieService {
-    async createMovie(body) {
+    async getAllMovies() {
+        return await Movie.find();
+    }
+    async createMovie(body, preview) {
         try {
+            console.log(preview);
             const { title, description, category } = body;
-            const movie = await Movie.create({ title, description, category: category });
+            const slugId = slugify(title);
+            const candidate = await Movie.findOne({ slug: slugId });
+            const movie = new Movie({ title: title, description: description, category: category });
+            if (candidate) {
+                movie.slug = await (slugId + '-' + (Math.random() + 1).toString(36).substring(9));
+            }
+            else {
+                movie.slug = slugId;
+            }
+            await movie.save();
             return { "movie": movie };
         }
         catch (e) {
@@ -25,28 +39,36 @@ let MovieService = class MovieService {
         const { category } = body;
         return await Category.create({ category });
     }
-    async getMovie(id) {
-        const movie = await Movie.findOne({ _id: id }).lean();
+    async getMovie(slug) {
+        const movie = await Movie.findOne({ slug: slug });
         return { "movie": movie, status: 200 };
     }
     async updateMovie(body) {
         const { title, description, category, id } = body;
-        const movie = await Movie.findOneAndUpdate({ _id: id }, { title, description, category }).lean();
+        const movie = await Movie.findOneAndUpdate({ _id: id }, { title, description, category });
         return { "movie": movie, status: 200 };
     }
+    async getCategories() {
+        return await Category.find();
+    }
     async deleteMovie(id) {
-        const movie = await Movie.deleteOne({ _id: id }).lean();
+        const movie = await Movie.deleteOne({ _id: id });
         if (movie) {
             return { "movies": await Movie.find(), status: 200 };
         }
     }
     async movieOfCategory(category) {
-        return await Movie.find({ category: category });
+        try {
+            return await Movie.find({ category: new mongoose.Types.ObjectId(`${category}`) });
+        }
+        catch (e) {
+            return e;
+        }
     }
     async setRatingFromUser(body) {
         const ObjectId = mongoose.Types.ObjectId;
         const { movieId, userId, rating } = body;
-        const updateRating = await Rating.findOneAndUpdate({ movie: movieId, user: userId }, { rating: rating }).lean();
+        const updateRating = await Rating.findOneAndUpdate({ movie: movieId, user: userId }, { rating: rating });
         if (!updateRating) {
             await Rating.create({ movie: movieId, user: userId, rating: rating });
         }
@@ -56,7 +78,7 @@ let MovieService = class MovieService {
                     "ratingAvg": { "$avg": "$rating" }
                 }
             }]).exec();
-        return await Movie.findOneAndUpdate({ _id: movieId }, { rating: ratings[0].ratingAvg }, { returnDocument: 'after' }).lean();
+        return await Movie.findOneAndUpdate({ _id: movieId }, { rating: ratings[0].ratingAvg }, { returnDocument: 'after' });
     }
 };
 MovieService = __decorate([

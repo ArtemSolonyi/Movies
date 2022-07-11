@@ -12,59 +12,88 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 import { TYPES } from "../types";
 import express from "express";
-import { MovieDto, setRatingMovieDto, updateMovieDto } from "../dto/movie.dto";
+import { getCategoriesMovie, MovieDto, updateMovieDto } from "../dto/movie.dto";
 import { injectable, inject } from "inversify";
 import { MovieService } from "../services/movie.service";
 import "reflect-metadata";
 import { validator } from "../validations/validate.middleware";
 import { Authorization } from "../middlewares/checkUser";
+import multer from "multer";
+import { storage } from "../middlewares/files";
 let MovieController = class MovieController {
-    constructor(movie) {
-        this.movie = movie;
+    constructor(movieService) {
+        this.movieService = movieService;
         this.createMovie = async (req, res) => {
-            const result = await this.movie.createMovie(req.body);
+            var _a;
+            console.log('qq');
+            const result = await this.movieService.createMovie(req.body, (_a = req.files) === null || _a === void 0 ? void 0 : _a.preview);
             if (!result) {
-                return res.status(500).json({ "message": "Failed to create movie" });
+                return res.status(500).json({ "message": "Failed to create movieService" });
             }
             return res.status(200).json(result);
         };
         this.updateMovie = async (req, res) => {
-            const result = await this.movie.updateMovie(req.body);
+            const result = await this.movieService.updateMovie(req.body);
             if (!result) {
-                return res.status(500).json({ "message": "Failed to update movie" });
+                return res.status(500).json({ "message": "Failed to update movieService" });
             }
             return res.status(result.status).json(result.movie);
         };
         this.getMovie = async (req, res) => {
-            const result = await this.movie.getMovie(req.params.id);
+            const result = await this.movieService.getMovie(req.query.slug);
             if (!result) {
-                return res.status(500).json({ "message": "Failed to receive movie" });
+                return res.status(500).json({ "message": "Failed to receive movieService" });
             }
             return res.status(result.status).json(result.movie);
         };
         this.deleteMovie = async (req, res) => {
-            const result = await this.movie.deleteMovie(req.params.id);
+            const result = await this.movieService.deleteMovie(req.params.id);
             if (!result) {
-                return res.status(500).json({ "message": "Failed to delete movie" });
+                return res.status(500).json({ "message": "Failed to delete movieService" });
             }
             return result;
         };
         this.getMovieOfCategory = async (req, res) => {
-            const result = await this.movie.movieOfCategory(req.params.category);
+            try {
+                if (!req.query) {
+                    return res.status(422).json({ "message": "Params is empty" });
+                }
+                const { category } = req.query;
+                const result = await this.movieService.movieOfCategory(category);
+                return res.status(200).json(result);
+            }
+            catch (e) {
+                return res.status(500).json('s');
+            }
+        };
+        this.getAllCategory = async (req, res) => {
+            const result = await this.movieService.getCategories();
             if (!result) {
-                return res.status(500).json({ "message": "Failed to delete movie" });
+                return res.status(500).json({ "message": "Failed to delete movieService" });
             }
             return res.status(200).json(result);
         };
         this.createCategory = async (req, res) => {
-            const result = await this.movie.createCategory(req.body);
+            const result = await this.movieService.createCategory(req.body);
             if (!result) {
                 return res.status(500).json({ "message": "Failed to create category" });
             }
             return res.status(200).json(result);
         };
         this.getSetRatingToMovieFromUser = async (req, res) => {
-            const result = await this.movie.setRatingFromUser(req.body);
+            try {
+                const result = await this.movieService.setRatingFromUser(req.body);
+                if (!result) {
+                    return res.status(500).json({ "message": "Failed to set rating" });
+                }
+                return res.status(200).json(result);
+            }
+            catch (e) {
+                return res.status(500).json(e);
+            }
+        };
+        this.getAllMovies = async (req, res) => {
+            const result = await this.movieService.getAllMovies();
             if (!result) {
                 return res.status(500).json({ "message": "Failed to create category" });
             }
@@ -72,9 +101,20 @@ let MovieController = class MovieController {
         };
         this.createRouter = () => {
             const router = express.Router();
-            router.post("/", [validator(MovieDto)], this.createMovie).get('/:id', this.getMovie).put('/', validator(updateMovieDto), this.updateMovie).delete('/:id', this.deleteMovie).get('/category/:category', this.getMovieOfCategory).post('/category', this.createCategory).patch('/rating', new Authorization().checkUser, validator(setRatingMovieDto), this.getSetRatingToMovieFromUser);
+            router.route('/allcategories').post(this.createCategory).get(this.getAllCategory);
+            router.route('/categories').get(validator(getCategoriesMovie), this.getMovieOfCategory);
+            router.route('/slug/')
+                .get(this.getMovie)
+                .delete(this.deleteMovie);
+            router.route('/rating')
+                .patch(new Authorization().checkUser, this.getSetRatingToMovieFromUser);
+            router.route('/')
+                .get(this.getAllMovies)
+                .put(validator(updateMovieDto), this.updateMovie)
+                .post(validator(MovieDto), this.upload.single('preview'), this.createMovie);
             return router;
         };
+        this.upload = multer({ storage: storage });
     }
 };
 MovieController = __decorate([

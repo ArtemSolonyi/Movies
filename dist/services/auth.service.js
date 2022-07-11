@@ -21,10 +21,16 @@ let AuthService = class AuthService {
             const registeredUser = await UserModel.create({
                 username: user.username,
                 email: user.email,
-                password: user.password
+                password: user.password,
+                role: 'admin',
             });
-            const token = new TokenService(registeredUser);
-            return await token.tokensForRegister();
+            const tokenService = new TokenService(registeredUser);
+            await tokenService.tokensForRegister();
+            return {
+                accessToken: tokenService.accessToken,
+                refreshToken: tokenService.refreshToken,
+                user: { email: user.email, id: registeredUser._id, role: registeredUser.role }
+            };
         }
     }
     async logout(userId) {
@@ -45,7 +51,12 @@ let AuthService = class AuthService {
             const checkResemblanceDecodePassword = bcrypt.compareSync(body.password, user.password);
             if (checkResemblanceDecodePassword) {
                 const tokenService = new TokenService(user);
-                return await tokenService.updateTokens();
+                await tokenService.updateTokens();
+                return {
+                    accessToken: tokenService.accessToken,
+                    refreshToken: tokenService.refreshToken,
+                    user: { email: user.email, username: user === null || user === void 0 ? void 0 : user.username, id: user._id, role: user === null || user === void 0 ? void 0 : user.role }
+                };
             }
             else {
                 return { "message": "Password doesn't resemblance" };
@@ -56,14 +67,24 @@ let AuthService = class AuthService {
         }
     }
     async getUpdatedTokens(refreshToken) {
-        const confirmationTokenInAvailable = await Token.findOne({ refreshToken: refreshToken }).lean();
-        if (confirmationTokenInAvailable) {
-            const user = await UserModel.findOne({ _id: confirmationTokenInAvailable.user }).lean();
-            const tokenService = new TokenService(user);
-            return await tokenService.updateTokens();
+        try {
+            const confirmationTokenInAvailable = await Token.findOne({ refreshToken: refreshToken });
+            if (confirmationTokenInAvailable) {
+                const user = await UserModel.findOne({ _id: confirmationTokenInAvailable.user });
+                const tokenService = new TokenService(user);
+                await tokenService.updateTokens();
+                return {
+                    user: { username: user === null || user === void 0 ? void 0 : user.username, email: user === null || user === void 0 ? void 0 : user.email, id: user === null || user === void 0 ? void 0 : user._id, role: user === null || user === void 0 ? void 0 : user.role },
+                    accessToken: tokenService.accessToken,
+                    refreshToken: tokenService.refreshToken
+                };
+            }
+            else {
+                return { "message": "refreshToken not found", "status": 422 };
+            }
         }
-        else {
-            return { "message": "refreshToken not found", "status": 422 };
+        catch (e) {
+            return e;
         }
     }
     async _checkForAvailableUser(user) {

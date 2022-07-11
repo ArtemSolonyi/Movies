@@ -1,8 +1,16 @@
-import {IsNumber, isString, IsString, MaxLength, MinLength} from "class-validator";
+import {
+
+    IsNumber,
+    IsOptional,
+    IsString,
+    MaxLength,
+    MinLength
+} from "class-validator";
 import mongoose from "mongoose";
+import fileUpload from "express-fileupload";
+import {Multer} from "multer";
 
 export class MovieDto {
-
     @MinLength(1, {each: true})
     @MaxLength(40, {each: true})
     @IsString()
@@ -13,18 +21,27 @@ export class MovieDto {
     description: string;
     @IsString()
     category: string
+}
 
+export class FilesOfMovieDto {
+    preview:Express.Multer.File
 }
 
 export class updateMovieDto extends MovieDto {
     id: mongoose.Types.ObjectId
 }
 
+export class getCategoriesMovie {
+    @IsOptional()
+    @MinLength(1, {each: true})
+    category: string
+}
+
 export class setRatingMovieDto {
-    @IsString()
-    movieId: mongoose.Types.ObjectId
-    @IsString()
-    userId: mongoose.Types.ObjectId
-    @IsNumber()
+    @IsOptional()
+    movieId: string
+    @IsOptional()
+    userId: string
+    @IsOptional()
     rating: number
 }

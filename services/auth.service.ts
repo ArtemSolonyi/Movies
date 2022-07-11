@@ -20,21 +20,26 @@ export class AuthService {
             const registeredUser: (IUser & mongoose.Document) | null = await UserModel.create({
                 username: user.username,
                 email: user.email,
-                password: user.password
+                password: user.password,
+                role: 'admin',
             })
-            const token = new TokenService(registeredUser)
-            return await token.tokensForRegister()
+            const tokenService = new TokenService(registeredUser)
+            await tokenService.tokensForRegister()
+            return {
+                accessToken: tokenService.accessToken,
+                refreshToken: tokenService.refreshToken,
+                user: {email: user.email, id: registeredUser._id,role:registeredUser.role}
+            }
         }
     }
 
     async logout(userId: string) {
-        
         try {
             await Token.findOneAndUpdate({user: userId}, {
                 accessToken: null,
                 refreshToken: null
             }, {resultDocument: 'after'})
-            return {"message":"Logout successfully"}
+            return {"message": "Logout successfully"}
         } catch (e) {
             return {e}
         }
@@ -46,7 +51,12 @@ export class AuthService {
             const checkResemblanceDecodePassword = bcrypt.compareSync(body.password, user.password);
             if (checkResemblanceDecodePassword) {
                 const tokenService: TokenService = new TokenService(user)
-                return await tokenService.updateTokens()
+                await tokenService.updateTokens()
+                return {
+                    accessToken: tokenService.accessToken,
+                    refreshToken: tokenService.refreshToken,
+                    user: {email: user.email, username: user?.username, id: user._id,role:user?.role}
+                }
             } else {
                 return {"message": "Password doesn't resemblance"}
             }
@@ -57,13 +67,24 @@ export class AuthService {
     }
 
     public async getUpdatedTokens(refreshToken: string) {
-        const confirmationTokenInAvailable: IToken | null = await Token.findOne({refreshToken: refreshToken}).lean()
-        if (confirmationTokenInAvailable) {
-            const user: (IUser & mongoose.Document) | null = await UserModel.findOne({_id: confirmationTokenInAvailable.user}).lean()
-            const tokenService = new TokenService(user)
-            return await tokenService.updateTokens()
-        } else {
-            return {"message": "refreshToken not found", "status": 422}
+        try {
+
+
+            const confirmationTokenInAvailable: IToken | null = await Token.findOne({refreshToken: refreshToken})
+            if (confirmationTokenInAvailable) {
+                const user: (IUser & mongoose.Document) | null = await UserModel.findOne({_id: confirmationTokenInAvailable.user})
+                const tokenService = new TokenService(user)
+                await tokenService.updateTokens()
+                return {
+                    user: {username: user?.username, email: user?.email, id: user?._id,role:user?.role},
+                    accessToken: tokenService.accessToken,
+                    refreshToken: tokenService.refreshToken
+                }
+            } else {
+                return {"message": "refreshToken not found", "status": 422}
+            }
+        } catch (e) {
+            return e
         }
     }
 
