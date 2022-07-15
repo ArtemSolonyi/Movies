@@ -56,7 +56,7 @@ export class App {
 
     async _start() {
         await mongoose
-            .connect('mongodb+srv://artem123a123:Lemon123@cluster0.0eo3z.mongodb.net/?retryWrites=true&w=majority', {
+            .connect('', {
                 useNewUrlParser: true,
                 useUnifiedTopology: true,
             } as ConnectOptions)
